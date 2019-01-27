@@ -7,11 +7,13 @@ using UnityEngine;
 public class TargetPractice : MonoBehaviour
 {
     public int Health { get; set; }
+    public int ArmourPercent { get; set; }
 
     // Start is called before the first frame update
     void Start()
     {
         this.Health = 99999999;
+        this.ArmourPercent = 34;
 
     }
 
@@ -21,6 +23,7 @@ public class TargetPractice : MonoBehaviour
         
     }
 
+  
     public override string ToString()
     {
         return $"Target has {this.Health} left";
@@ -28,13 +31,18 @@ public class TargetPractice : MonoBehaviour
 
     internal void TakeDamage(int incomingDamage, string weaponDescription)
     {
-        this.Health = this.Health - incomingDamage;
+        var calculatedDamage = GetIncomingDamageFrom(incomingDamage);
+        this.Health = this.Health - calculatedDamage;
         
+        //this.Health = this.Health - CalculateDamageBasedOnArmour() (incomingDamage - Armour);
+
+        //eg. incomingDmg = 100 and armour = 0 -> totalDmg = 100
+        //eg. incomingDmg = 100 and armour = 34 -> totalDmg = incomingDmg - Math.round(incomingDmg*34/100);
 
         GameObject canvasObject = GameObject.FindGameObjectWithTag("Canvas");
         var txtDmgTaken = canvasObject.transform.Find("TextDamageTaken");
         var componentTxtDaamgetaken = txtDmgTaken.GetComponent<TextMeshProUGUI>();
-        componentTxtDaamgetaken.SetText($"{incomingDamage}");
+        componentTxtDaamgetaken.SetText($"{calculatedDamage}");
 
         StartCoroutine(FadeTextToZeroAlpha(.2f, componentTxtDaamgetaken));
 
@@ -46,6 +54,17 @@ public class TargetPractice : MonoBehaviour
         var txtAttackStatus = canvasObject.transform.Find("TextAttackStatus");
         var componentTxtAttackStatus = txtAttackStatus.GetComponent<TextMeshProUGUI>();
         componentTxtAttackStatus.SetText(weaponDescription);
+    }
+
+
+    private int GetIncomingDamageFrom(int incomingDamage)
+    {
+        decimal dmgCalc = incomingDamage * ArmourPercent / 100;
+        var totalDmg = incomingDamage - Math.Round(dmgCalc);
+        Debug.Log(totalDmg);
+        return Convert.ToInt32(totalDmg);
+        
+    
     }
 
     public IEnumerator FadeTextToZeroAlpha(float t, TextMeshProUGUI i)

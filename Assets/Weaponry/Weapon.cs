@@ -92,7 +92,7 @@ namespace Assets.Weaponry
 
         public override string ToString()
         {
-            return $"Attacking with: {Name}, augmented with: {GetNamesOfAugments()} items";
+            return $"Attacking with: {Name}, augmented with: {GetNamesOfAugments()}";
         }
 
         private string GetNamesOfAugments()
